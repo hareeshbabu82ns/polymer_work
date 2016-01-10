@@ -1,0 +1,24 @@
+<link rel="import"
+      href="/bower_components/polymer/polymer.html">
+<dom-module id="todo-item">
+  <link rel="import" href="todo-item.css">
+  <template>
+    <paper-item>
+      <paper-checkbox checked$="{{todo.finished}}"></paper-checkbox>
+      {{todo.title}}
+    </paper-item>
+  </template>
+  <script>
+    Polymer({
+      is: "todo-item",
+      properties: {
+        todo: {
+          type: Object,
+          value: function () {
+            return {title: "hi", finished: true};
+          }
+        }
+      }
+    });
+  </script>
+</dom-module>

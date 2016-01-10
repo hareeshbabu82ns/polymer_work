@@ -1,0 +1,86 @@
+<link rel="import"
+      href="/bower_components/polymer/polymer.html">
+
+<dom-module id="x-app">
+  <link rel="import" type="css" href="x-app.css">
+  <template>
+    <paper-drawer-panel id="drawerPanel" responsive-width="1280px">
+      <paper-header-panel class="nav" drawer>
+        <!-- Nav Content -->
+        <paper-toolbar>
+          <div>Menu</div>
+        </paper-toolbar>
+        <paper-menu class="scroll" selected="{{menuSel}}">
+          <template is="dom-repeat" items="{{menuItems}}">
+            <paper-icon-item>
+              <iron-icon icon="{{item.icon}}" item-icon></iron-icon>
+              {{item.title}}
+            </paper-icon-item>
+          </template>
+        </paper-menu>
+      </paper-header-panel>
+      <paper-header-panel id="headerPanel" main class="main">
+
+        <paper-toolbar> <!-- Main Area Toolbar -->
+          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+          <div>PolymerWorks</div>
+        </paper-toolbar>
+        <div class="content">
+          <!-- Main Content-->
+          <iron-pages selected="{{menuSel}}">
+            <section>
+
+            </section>
+
+            <section>
+              <p>Selected Menu Item {{menuSel}}</p>
+
+              <paper-button raised class="fancy"
+                            on-tap="handleClick" id="button">Click!
+              </paper-button>
+
+              <paper-badge for="button" label="{{clicksCount}}"></paper-badge>
+            </section>
+
+            <x-todo></x-todo>
+
+          </iron-pages>
+        </div>
+      </paper-header-panel>
+    </paper-drawer-panel>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: "x-app",
+      properties: {
+        clicksCount: {
+          type: Number,
+          value: 0
+        },
+        menuItems: {
+          type: Array,
+          value: [{title: "Home", icon: "home"},
+            {title: "Dashboard", icon: "dashboard"},
+            {title: "Todo", icon: "check"}]
+        },
+        menuSel: {
+          type: Number,
+          value: 2,
+//          notify: true,
+//          observer: '_menuSelectionChanged'
+        }
+      },
+      handleClick: function (e) {
+        this.clicksCount++;
+        openToast("button clicked for " + this.clicksCount + " times");
+        /**/
+      },
+      _menuSelectionChanged: function (newVal, oldVal) {
+        openToast("menu item selected" + newVal);
+      }
+    });
+  </script>
+
+</dom-module>

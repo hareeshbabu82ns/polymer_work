@@ -1,0 +1,25 @@
+<link rel="import"
+      href="/bower_components/polymer/polymer.html">
+<dom-module id="x-todo">
+  <link rel="import" type="css" href="x-todo.css">
+  <template>
+    <todo-item item="{{todo}}"></todo-item>
+  </template>
+  <script>
+    Polymer({
+      is: "x-todo",
+      properties: {
+        todo: {
+          type: Object,
+          value: {title: "todo title", finished: false}
+        },
+        todos: {
+          type: Array,
+          value: function () {
+            return [];
+          }
+        }
+      }
+    });
+  </script>
+</dom-module>

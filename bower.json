@@ -1,0 +1,30 @@
+{
+  "name": "poly_work",
+  "description": "",
+  "main": "main.js",
+  "authors": [
+    "Hareesh Polla"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "path": "~3.46.1",
+    "bootstrap": "~3.3.5",
+    "underscore": "~1.8.3",
+    "polymer": "Polymer/polymer#~1.2.1",
+    "polymer-boilerplate": "~0.0.2",
+    "polymer-themes": "~1.0.1",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.0",
+    "neon-elements": "PolymerElements/neon-elements#^1.0.0",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.1",
+    "platinum-elements": "PolymerElements/platinum-elements#^1.1.0"
+  }
+}
