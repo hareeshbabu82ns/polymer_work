@@ -1,0 +1,55 @@
+
+:host {
+  display: block;
+  margin: 0px;
+}
+
+.nav {
+  border-right: 1px solid #ccc;
+}
+
+.nav paper-menu {
+  background-color: var(--paper-indigo-50);
+}
+
+.nav paper-icon-item{
+  /*background-color: #004d40;*/
+  --paper-item-selected: {
+    background-color: var(--paper-indigo-100);
+   };
+}
+
+paper-menu {
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.main {
+  /*background-color: #eee;*/
+}
+
+paper-toolbar {
+  background-color: var(--paper-green-600);
+}
+
+.content {
+  padding: 0 16px;
+  height: 100%;
+  overflow-y: scroll;
+  background-color: var(--paper-indigo-50);
+}
+
+/*-----------*/
+p {
+  font-size: large;
+  font-weight: 900;
+}
+
+paper-button.fancy {
+  background: #00695c;
+  color: yellow;
+}
+
+paper-button.fancy:hover {
+  background: cornflowerblue;
+}
