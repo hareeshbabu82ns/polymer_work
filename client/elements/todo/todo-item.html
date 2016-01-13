@@ -1,24 +1,54 @@
 <link rel="import"
       href="/bower_components/polymer/polymer.html">
 <dom-module id="todo-item">
-  <link rel="import" href="todo-item.css">
+  <link rel="import" type="css" href="todo-item.css">
   <template>
-    <paper-item>
-      <paper-checkbox checked$="{{todo.finished}}"></paper-checkbox>
-      {{todo.title}}
+    <paper-item on-dblclick="toggleToEdit">
+      <paper-checkbox id="tdCheck" checked$="{{item.finished}}"
+                      on-change="finishTodo"></paper-checkbox>
+      <span id="todo_title" hidden$="{{inEditMode}}">{{item.title}}</span>
+      <paper-input hidden$="{{!inEditMode}}" placeholder="Todo Title"></paper-input>
     </paper-item>
   </template>
   <script>
     Polymer({
       is: "todo-item",
       properties: {
-        todo: {
+        item: {
           type: Object,
+          notify: true,
+          reflectToAttribute: true,
           value: function () {
-            return {title: "hi", finished: true};
-          }
+            return {title: "", finished: false};
+          },
+          observer: '_todoChanged'
+        },
+        inEditMode: {
+          type: Boolean,
+          value: false,
+          notify: false
         }
-      }
+      },
+      finishTodo: function () { //when Checkbox Clicked
+        this.item.finished = this.$.tdCheck.checked;
+        Polymer.Base.toggleClass('finished-todo', this.item.finished, this.$.todo_title);
+        console.log("finishTodo: " + JSON.stringify(this.item));
+      },
+      _todoChanged: function (obj) { //when todo object changed
+        console.log("_todoChanged: " + JSON.stringify(obj));
+      },
+      _todoCheckChanged: function (checked) { //when todo-finished attribute changed
+        Polymer.Base.toggleClass('finished-todo', checked, this.$.todo_title);
+        console.log("_todoCheckChanged: " + checked);
+      },
+      toggleToEdit: function () {
+        this.inEditMode = !this.inEditMode;
+        console.log("toggleToEdit: " + this.inEditMode);
+      },
+      observers: [
+        '_todoCheckChanged(item.finished)'
+      ]
+
     });
   </script>
 </dom-module>
