@@ -4,6 +4,9 @@
 <dom-module id="x-app">
   <link rel="import" type="css" href="x-app.css">
   <template>
+    <parse-core application_id="o50N3BBiGHYWCTFcBLHUf5AxOvKJvkD4iZ573Ur3"
+                js_key="8Gn1tsowIytMCF3rRTF7tZdOEwtg6lQLlmY8wAqC"></parse-core>
+
     <paper-drawer-panel id="drawerPanel" responsive-width="1280px">
       <paper-header-panel class="nav" drawer>
         <!-- Nav Content -->
@@ -44,11 +47,13 @@
 
             <x-todo></x-todo>
 
+            <!--<td-model id="model" items="{{todos}}"></td-model>-->
+            <!--<td-todos model-id="model" items="{{todos}}"></td-todos>-->
+
           </iron-pages>
         </div>
       </paper-header-panel>
     </paper-drawer-panel>
-
   </template>
 
   <script>

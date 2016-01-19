@@ -1,13 +1,19 @@
 <link rel="import"
       href="/bower_components/polymer/polymer.html">
+<link rel="import" href="td-input.html"/>
+
 <dom-module id="todo-item">
   <link rel="import" type="css" href="todo-item.css">
   <template>
     <paper-item on-dblclick="toggleToEdit">
-      <paper-checkbox id="tdCheck" checked$="{{item.finished}}"
+      <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
                       on-change="finishTodo"></paper-checkbox>
-      <span id="todo_title" hidden$="{{inEditMode}}">{{item.title}}</span>
-      <paper-input hidden$="{{!inEditMode}}" placeholder="Todo Title"></paper-input>
+      <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
+      <input is="td-input" hidden$="{{!inEditMode}}" placeholder="Todo Title"
+             value="{{localItem.title}}" no-label-float onchange="_todoChanged">
+      <!--<paper-icon-button suffix onclick="clearInput()" icon="clear" alt="clear" title="clear">-->
+      <!--</paper-icon-button>-->
+      </input>
     </paper-item>
   </template>
   <script>
@@ -27,15 +33,23 @@
           type: Boolean,
           value: false,
           notify: false
+        },
+        localItem: {
+          type: Object,
+          value: function () {
+            return {title: "", finished: false};
+          }
         }
       },
       finishTodo: function () { //when Checkbox Clicked
-        this.item.finished = this.$.tdCheck.checked;
-        Polymer.Base.toggleClass('finished-todo', this.item.finished, this.$.todo_title);
+        this.item.set('finished', this.$.tdCheck.checked);
+        Polymer.Base.toggleClass('finished-todo', this.item.get('finished'), this.$.todo_title);
         console.log("finishTodo: " + JSON.stringify(this.item));
       },
       _todoChanged: function (obj) { //when todo object changed
         console.log("_todoChanged: " + JSON.stringify(obj));
+        this.localItem.title = this.item.get('title');
+        this.localItem.finished = this.item.get('finished');
       },
       _todoCheckChanged: function (checked) { //when todo-finished attribute changed
         Polymer.Base.toggleClass('finished-todo', checked, this.$.todo_title);
