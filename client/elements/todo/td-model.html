@@ -3,8 +3,7 @@
 
 <dom-module id="td-model">
 	<template strip-whitespace>
-		<iron-localstorage name="todos-polymer" value="{{items}}"
-				on-iron-localstorage-load-empty="_initializeDefaultTodos"></iron-localstorage>
+		<!--<parse-element class_name="Todos" items="{{items}}"></parse-element>-->
 	</template>
 	<script>
 		(function () {
@@ -20,15 +19,19 @@
 				properties: {
 					items: {
 						type: Array,
-						notify: true
+						notify: true,
+						value: function(){
+							return [{title:"todo1",finished: false},{title:"todo2",finished: true}];
+						}
 					},
 					filter: {
 						type: String
 					}
 				},
 
+
 				_initializeDefaultTodos: function () {
-					this.items = [];
+					this.items = [{title:"todo1",finished: false},{title:"todo2",finished: true}];
 				},
 
 				newItem: function(title) {
@@ -38,11 +41,11 @@
 						return;
 					}
 
-					this.push('items', {title: title, completed: false});
+					this.push('items', {title: title, finished: false});
 				},
 
 				getCompletedCount: function () {
-					return this.items ? this.items.filter(this.filters.completed).length : 0;
+					return this.items ? this.items.filter(this.filters.finished).length : 0;
 				},
 
 				getActiveCount: function () {
@@ -65,18 +68,18 @@
 					this.items = this.items.filter(this.filters.active);
 				},
 
-				setItemsCompleted: function(completed) {
+				setItemsCompleted: function(finished) {
 					for (var i = 0; i < this.items.length; ++i) {
-						this.set(['items', i, 'completed'], completed);
+						this.set(['items', i, 'finished'], finished);
 					}
 				},
 
 				filters: {
 					active: function(item) {
-						return !item.completed;
+						return !item.finished;
 					},
-					completed: function(item) {
-						return item.completed;
+					finished: function(item) {
+						return item.finished;
 					}
 				}
 			});

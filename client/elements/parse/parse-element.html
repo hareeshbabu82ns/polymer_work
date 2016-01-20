@@ -19,7 +19,6 @@
       },
       ready: function () {
         this.ParseObject = Parse.Object.extend(this.class_name);
-//        this.sampleObject();
         this.fetchAll();
       },
       newObject: function () {
@@ -35,6 +34,7 @@
             for (var i = 0; i < results.length; i++) {
               var object = results[i];
               console.log(object);
+//              me.push('items', object.toJSON());
               me.push('items', object);
             }
           },
@@ -46,11 +46,44 @@
       sampleObject: function () {
         var me = this;
         var obj = new this.ParseObject();
-        obj.save({title: "todo parse", finished: false}).then(function (object) {
-          me.push('items', object);
+        obj.save({title: "todo parse 5", finished: true}).then(function (object) {
+          me.push('items', object.toJSON());
           console.log(object);
         });
-      }
+      },
+      updateObject: function (item) {
+        var me = this;
+//        item.className = this.class_name;
+//        var obj = Parse.Object.fromJSON(item);
+        item.save(null, {
+          success: function (obj) {
+            console.log("updated");
+            console.log(obj.toJSON());
+          },
+          error: function (obj, err) {
+            console.log(err);
+          }
+        });
+      },
+      deleteObject: function (item) {
+        var me = this;
+        item.className = this.class_name;
+        var obj = Parse.Object.fromJSON(item);
+        obj.destroy({
+          success: function (obj) {
+            me.deleteObjectLocal(obj);
+            console.log("deleted");
+          },
+          error: function (obj, err) {
+            console.log(err);
+          }
+        });
+      },
+      deleteObjectLocal: function (item) {
+        var idx = _.findIndex(this.items, {objectId: item.id});
+        if (idx >= 0)
+          this.splice('items', idx, 1);
+      },
     });
 
   </script>

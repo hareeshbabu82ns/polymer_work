@@ -5,12 +5,17 @@
 <dom-module id="todo-item">
   <link rel="import" type="css" href="todo-item.css">
   <template>
-    <paper-item on-dblclick="toggleToEdit">
+    <paper-item on-dblclick="_editAction">
       <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
-                      on-change="finishTodo"></paper-checkbox>
+                      on-change="updateFinished"></paper-checkbox>
       <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
+      <paper-icon-button icon="delete" hidden="{{inEditMode}}"
+                         on-tap="_destroyAction"></paper-icon-button>
       <input is="td-input" hidden$="{{!inEditMode}}" placeholder="Todo Title"
-             value="{{localItem.title}}" no-label-float onchange="_todoChanged">
+             value="{{_editingValue::input}}"
+             on-td-input-commit="_commitAction"
+             on-td-input-cancel="_cancelAction"
+             on-blur="_onBlur">
       <!--<paper-icon-button suffix onclick="clearInput()" icon="clear" alt="clear" title="clear">-->
       <!--</paper-icon-button>-->
       </input>
@@ -28,28 +33,24 @@
             return {title: "", finished: false};
           },
           observer: '_todoChanged'
-        },
-        inEditMode: {
-          type: Boolean,
-          value: false,
-          notify: false
-        },
-        localItem: {
-          type: Object,
-          value: function () {
-            return {title: "", finished: false};
-          }
         }
       },
-      finishTodo: function () { //when Checkbox Clicked
-        this.item.set('finished', this.$.tdCheck.checked);
-        Polymer.Base.toggleClass('finished-todo', this.item.get('finished'), this.$.todo_title);
-        console.log("finishTodo: " + JSON.stringify(this.item));
+      attach: function () {
+        this.localItem = {title: "", finished: false};
+      },
+      ready: function () {
+        this.inEditMode = false;
+      },
+      updateFinished: function () { //when Checkbox Clicked
+        this.localItem.finished = this.$.tdCheck.checked;
+        this.item.set('finished', this.localItem.finished);
+        Polymer.Base.toggleClass('finished-todo', this.localItem.finished, this.$.todo_title);
+        this.fire('todo-update-item', this.item);
+        console.log("updateFinished: " + JSON.stringify(this.item));
       },
       _todoChanged: function (obj) { //when todo object changed
         console.log("_todoChanged: " + JSON.stringify(obj));
-        this.localItem.title = this.item.get('title');
-        this.localItem.finished = this.item.get('finished');
+        this.localItem = obj.toJSON();
       },
       _todoCheckChanged: function (checked) { //when todo-finished attribute changed
         Polymer.Base.toggleClass('finished-todo', checked, this.$.todo_title);
@@ -57,10 +58,45 @@
       },
       toggleToEdit: function () {
         this.inEditMode = !this.inEditMode;
+        if (this.inEditMode)
+          this.$.todo_title.focus();
         console.log("toggleToEdit: " + this.inEditMode);
       },
+      _onBlur: function () {
+        this._commitAction();
+        this.inEditMode = false;
+      },
+      _editAction: function () {
+        this.inEditMode = true;
+        this._editingValue = this.localItem.title;
+        // Wait one tick template to stamp.
+        this.async(function () {
+          this.querySelector('#todo_title').focus();
+        });
+      },
+      _commitAction: function () {
+        if (this.inEditMode) {
+          this.inEditMode = false;
+          if (this.localItem.title === this._editingValue.trim())
+            return;
+          this.set('localItem.title', this._editingValue.trim());
+          this.item.set('title', this.localItem.title);
+          if (this.localItem.title === '') {
+            this._destroyAction();
+          } else {
+            this.fire('todo-update-item', this.item);
+          }
+        }
+      },
+      _cancelAction: function () {
+        this.inEditMode = false;
+      },
+      _destroyAction: function () {
+        this.fire('todo-destroy-item', this.item);
+      },
+
       observers: [
-        '_todoCheckChanged(item.finished)'
+        '_todoCheckChanged(localItem.finished)'
       ]
 
     });
