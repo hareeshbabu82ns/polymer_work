@@ -1,3 +1,34 @@
 #todo-list{
   list-style: none;
 }
+#newTodo {
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  border-bottom: 1px solid #ccc;
+}
+paper-fab {
+  position: absolute;
+  background: #00BCD4;
+  bottom: 2vh;
+  right: 2vw;
+}
+paper-input {
+  margin: 0 4vw;
+  padding: 0;
+}
+paper-material {
+  background-color: #fff;
+  max-width: 640px;
+  width: 95%;
+  margin: 25px auto;
+  position: relative;
+}
+#todo-list {
+  overflow-y: scroll;
+  height: 80vh;
+}
+
+#todos-list {
+  overflow-y: scroll;
+}

@@ -1,5 +1,13 @@
 <link href="/bower_components/polymer/polymer.html" rel="import">
 
+<!--
+  Parse Object can be converted to plain JSON object:
+    object.toJSON();
+  And can be converted back to Parse Object:
+    item.className = "class_name";
+    var object = Parse.Object.fromJSON(item);
+-->
+
 <dom-module id="parse-element" attributes="class_name items">
   <script>
     Polymer({
@@ -15,6 +23,9 @@
             return [];
           },
           notify: true
+        },
+        filter: {
+          type: String
         }
       },
       ready: function () {
@@ -33,8 +44,6 @@
             // Do something with the returned Parse.Object values
             for (var i = 0; i < results.length; i++) {
               var object = results[i];
-              console.log(object);
-//              me.push('items', object.toJSON());
               me.push('items', object);
             }
           },
@@ -43,47 +52,87 @@
           }
         });
       },
-      sampleObject: function () {
+      addObject: function (item, options) { //item should be plain JSON
         var me = this;
         var obj = new this.ParseObject();
-        obj.save({title: "todo parse 5", finished: true}).then(function (object) {
-          me.push('items', object.toJSON());
-          console.log(object);
-        });
-      },
-      updateObject: function (item) {
-        var me = this;
-//        item.className = this.class_name;
-//        var obj = Parse.Object.fromJSON(item);
-        item.save(null, {
+        return obj.save(item, {
           success: function (obj) {
-            console.log("updated");
-            console.log(obj.toJSON());
+            me.push('items', obj);
+            console.log(obj);
+            if (_.isObject(options) && _.isFunction(options.success))
+              options.success.call(me, obj);
           },
           error: function (obj, err) {
             console.log(err);
+            if (_.isObject(options) && _.isFunction(options.error))
+              options.error.call(me, obj, err);
           }
         });
       },
-      deleteObject: function (item) {
+      updateObject: function (item, options) { //item should be ParseObject
         var me = this;
-        item.className = this.class_name;
-        var obj = Parse.Object.fromJSON(item);
-        obj.destroy({
+        return item.save(null, {
           success: function (obj) {
-            me.deleteObjectLocal(obj);
-            console.log("deleted");
+            console.log("updated");
+            console.log(obj.toJSON());
+            if (_.isObject(options) && _.isFunction(options.success))
+              options.success.call(me, obj);
           },
           error: function (obj, err) {
             console.log(err);
+            if (_.isObject(options) && _.isFunction(options.error))
+              options.error.call(me, obj, err);
+          }
+        });
+      },
+      deleteObject: function (item, options) { //item should be ParseObject
+        var me = this;
+        return item.destroy({
+          success: function (obj) {
+            me.deleteObjectLocal(obj);
+            console.log("deleted");
+            if (_.isObject(options) && _.isFunction(options.success))
+              options.success.call(me, obj);
+          },
+          error: function (obj, err) {
+            console.log(err);
+            if (_.isObject(options) && _.isFunction(options.error))
+              options.error.call(me, obj, err);
           }
         });
       },
       deleteObjectLocal: function (item) {
-        var idx = _.findIndex(this.items, {objectId: item.id});
+        var idx = _.findIndex(this.items, {id: item.id});
         if (idx >= 0)
           this.splice('items', idx, 1);
       },
+
+      getCompletedCount: function () {
+        return this.items ? this.items.filter(this.filters.finished).length : 0;
+      },
+      getActiveCount: function () {
+        return this.items ? (this.items.length - this.getCompletedCount(this.items)) : 0;
+      },
+      matchesFilter: function (item, filter) {
+        var fn = this.filters[filter];
+        return fn ? fn(item) : true;
+      },
+      clearCompletedItems: function () {
+        this.items = this.items.filter(this.filters.active);
+      },
+      setItemsCompleted: function (finished) {
+        for (var i = 0; i < this.items.length; ++i) {
+          this.set(['items', i, 'finished'], finished);
+        }
+      },
+      filters: {
+        active: function (item) {
+          return !item.finished;
+        },
+        finished: function (item) {
+          return item.finished;
+        }
+      }
     });
 
   </script>

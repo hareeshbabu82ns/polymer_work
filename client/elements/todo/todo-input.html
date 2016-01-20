@@ -8,7 +8,7 @@
 	var ESC_KEY = 27;
 
 	Polymer({
-		is: 'td-input',
+		is: 'todo-input',
 
 		extends: 'input',
 
@@ -21,13 +21,13 @@
 			// Listen for enter on keypress but esc on keyup, because
 			// IE doesn't fire keyup for enter.
 			if (e.keyCode === ENTER_KEY) {
-				this.fire('td-input-commit');
+				this.fire('todo-input-commit');
 			}
 		},
 
 		_keyupAction: function(e, detail, sender) {
 			if (e.keyCode === ESC_KEY) {
-				this.fire('td-input-cancel');
+				this.fire('todo-input-cancel');
 			}
 		}
 	});

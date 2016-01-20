@@ -1,25 +1,38 @@
 <link rel="import"
       href="/bower_components/polymer/polymer.html">
-<link rel="import" href="td-input.html"/>
+<link rel="import" href="/bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="todo-input.html"/>
 
 <dom-module id="todo-item">
   <link rel="import" type="css" href="todo-item.css">
   <template>
-    <paper-item on-dblclick="_editAction">
-      <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
-                      on-change="updateFinished"></paper-checkbox>
-      <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
-      <paper-icon-button icon="delete" hidden="{{inEditMode}}"
-                         on-tap="_destroyAction"></paper-icon-button>
-      <input is="td-input" hidden$="{{!inEditMode}}" placeholder="Todo Title"
-             value="{{_editingValue::input}}"
-             on-td-input-commit="_commitAction"
-             on-td-input-cancel="_cancelAction"
-             on-blur="_onBlur">
-      <!--<paper-icon-button suffix onclick="clearInput()" icon="clear" alt="clear" title="clear">-->
-      <!--</paper-icon-button>-->
-      </input>
-    </paper-item>
+    <paper-material>
+      <paper-item on-dblclick="_editAction" class="row">
+        <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
+                        on-change="updateFinished" class="col-sm-1"></paper-checkbox>
+        <div class="col-sm-10">
+          <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
+          <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="enter"
+                          on-keys-pressed="_commitAction"></iron-a11y-keys>
+          <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="esc"
+                          on-keys-pressed="_cancelAction"></iron-a11y-keys>
+          <paper-input id="todoTitle" label="Todo Title"
+                       hidden$="{{!inEditMode}}" focused="{{focused}}"
+                       value="{{_editingValue::input}}"></paper-input>
+          <!--<input is="todo-input"  placeholder="Todo Title"-->
+          <!--value="{{_editingValue::input}}"-->
+          <!--on-todo-input-commit="_commitAction"-->
+          <!--on-todo-input-cancel="_cancelAction"-->
+          <!--on-blur="_onBlur">-->
+          <!--<paper-icon-button suffix onclick="clearInput()" icon="clear" alt="clear" title="clear">-->
+          <!--</paper-icon-button>-->
+        </div>
+        <div class="actions col-sm-1">
+          <paper-icon-button icon="delete" on-tap="_destroyAction"></paper-icon-button>
+        </div>
+        </input>
+      </paper-item>
+    </paper-material>
   </template>
   <script>
     Polymer({
@@ -33,13 +46,17 @@
             return {title: "", finished: false};
           },
           observer: '_todoChanged'
+        },
+        tdTitleInputTarget: {
+          type: Object,
+          value: function () {
+            return this.$.todoTitle;
+          }
         }
-      },
-      attach: function () {
-        this.localItem = {title: "", finished: false};
       },
       ready: function () {
         this.inEditMode = false;
+        this.focused=false;
       },
       updateFinished: function () { //when Checkbox Clicked
         this.localItem.finished = this.$.tdCheck.checked;
@@ -49,18 +66,12 @@
         console.log("updateFinished: " + JSON.stringify(this.item));
       },
       _todoChanged: function (obj) { //when todo object changed
-        console.log("_todoChanged: " + JSON.stringify(obj));
+//        console.log("_todoChanged: " + JSON.stringify(obj));
         this.localItem = obj.toJSON();
       },
       _todoCheckChanged: function (checked) { //when todo-finished attribute changed
         Polymer.Base.toggleClass('finished-todo', checked, this.$.todo_title);
         console.log("_todoCheckChanged: " + checked);
-      },
-      toggleToEdit: function () {
-        this.inEditMode = !this.inEditMode;
-        if (this.inEditMode)
-          this.$.todo_title.focus();
-        console.log("toggleToEdit: " + this.inEditMode);
       },
       _onBlur: function () {
         this._commitAction();
@@ -71,7 +82,8 @@
         this._editingValue = this.localItem.title;
         // Wait one tick template to stamp.
         this.async(function () {
-          this.querySelector('#todo_title').focus();
+//          this.querySelector('#todoTitle').focus();
+          this.$.todoTitle.focus();
         });
       },
       _commitAction: function () {
@@ -94,11 +106,16 @@
       _destroyAction: function () {
         this.fire('todo-destroy-item', this.item);
       },
-
+      _focusChanged: function (focused) {
+        if(this.inEditMode && !focused)
+          this._onBlur();
+      },
       observers: [
-        '_todoCheckChanged(localItem.finished)'
+        '_todoCheckChanged(localItem.finished)',
+        '_focusChanged(focused)'
       ]
 
-    });
+    })
+    ;
   </script>
 </dom-module>
