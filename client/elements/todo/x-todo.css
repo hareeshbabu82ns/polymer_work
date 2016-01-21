@@ -19,10 +19,10 @@ paper-input {
 }
 paper-material {
   background-color: #fff;
-  max-width: 640px;
-  width: 95%;
-  margin: 25px auto;
-  position: relative;
+  /*max-width: 640px;*/
+  /*width: 95%;*/
+  /*margin: 25px auto;*/
+  /*position: relative;*/
 }
 #todo-list {
   overflow-y: scroll;

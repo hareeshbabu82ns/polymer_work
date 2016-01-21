@@ -3,19 +3,25 @@
   /*border: 1px solid green;*/
   /*border-bottom: 1px solid green;*/
 }
-paper-item span.finished-todo {
+span.finished-todo {
   text-decoration: line-through;
 }
-paper-item:hover {
-  background: #b2dfdb;
-}
+/*paper-item:hover {*/
+  /*background: #b2dfdb;*/
+/*}*/
 paper-material {
   background-color: #fff;
-  max-width: 640px;
-  margin: 25px auto;
-  position: relative;
+  /*max-width: 640px;*/
+  margin: 10px auto;
+  /*position: relative;*/
 }
-.actions {
-  float: right;
-  position: relative;
+paper-card {
+  background-color: #fff;
+  width: 100%;
+  margin: 10px auto;
+  /*position: relative;*/
 }
+/*.actions {*/
+  /*float: right;*/
+  /*position: relative;*/
+/*}*/

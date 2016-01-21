@@ -7,31 +7,31 @@
   <link rel="import" type="css" href="todo-item.css">
   <template>
     <paper-material>
-      <paper-item on-dblclick="_editAction" class="row">
+      <paper-icon-item on-dblclick="_editAction">
         <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
-                        on-change="updateFinished" class="col-sm-1"></paper-checkbox>
-        <div class="col-sm-10">
-          <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
-          <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="enter"
-                          on-keys-pressed="_commitAction"></iron-a11y-keys>
-          <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="esc"
-                          on-keys-pressed="_cancelAction"></iron-a11y-keys>
-          <paper-input id="todoTitle" label="Todo Title"
-                       hidden$="{{!inEditMode}}" focused="{{focused}}"
-                       value="{{_editingValue::input}}"></paper-input>
-          <!--<input is="todo-input"  placeholder="Todo Title"-->
-          <!--value="{{_editingValue::input}}"-->
-          <!--on-todo-input-commit="_commitAction"-->
-          <!--on-todo-input-cancel="_cancelAction"-->
-          <!--on-blur="_onBlur">-->
-          <!--<paper-icon-button suffix onclick="clearInput()" icon="clear" alt="clear" title="clear">-->
-          <!--</paper-icon-button>-->
-        </div>
-        <div class="actions col-sm-1">
-          <paper-icon-button icon="delete" on-tap="_destroyAction"></paper-icon-button>
-        </div>
-        </input>
-      </paper-item>
+                        on-change="updateFinished" item-icon></paper-checkbox>
+        <paper-item-body two-line>
+          <div>
+            <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
+            <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="enter"
+                            on-keys-pressed="_commitAction"></iron-a11y-keys>
+            <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="esc"
+                            on-keys-pressed="_cancelAction"></iron-a11y-keys>
+            <paper-input id="todoTitle" label="Todo Title"
+                         hidden$="{{!inEditMode}}" focused="{{focused}}"
+                         value="{{_editingValue::input}}" no-label-float>
+              <!--<paper-icon-button suffix on-tap="_clearInput"-->
+              <!--icon="clear" alt="clear" title="clear">-->
+              <!--</paper-icon-button>-->
+            </paper-input>
+          </div>
+          <div secondary>
+            Due by: Tomorrow
+          </div>
+        </paper-item-body>
+        <paper-icon-button icon="delete" on-tap="_destroyAction"></paper-icon-button>
+        <paper-icon-button icon="more-vert" on-tap="_editTodo"></paper-icon-button>
+      </paper-icon-item>
     </paper-material>
   </template>
   <script>
@@ -56,7 +56,7 @@
       },
       ready: function () {
         this.inEditMode = false;
-        this.focused=false;
+        this.focused = false;
       },
       updateFinished: function () { //when Checkbox Clicked
         this.localItem.finished = this.$.tdCheck.checked;
@@ -100,6 +100,12 @@
           }
         }
       },
+      _editTodo: function () {
+        //show popup to edit Task
+      },
+      _clearInput: function () {
+        console.log('clear input');
+      },
       _cancelAction: function () {
         this.inEditMode = false;
       },
@@ -107,7 +113,7 @@
         this.fire('todo-destroy-item', this.item);
       },
       _focusChanged: function (focused) {
-        if(this.inEditMode && !focused)
+        if (this.inEditMode && !focused)
           this._onBlur();
       },
       observers: [
