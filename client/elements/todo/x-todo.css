@@ -1,28 +1,60 @@
-#todo-list{
-  list-style: none;
+:host {
+  display: block;
+  /*max-width: 920px;*/
 }
-#newTodo {
+.cards {
+  @apply(--layout-horizontal);
+  @apply(--layout-wrap);
+
+  margin-right: -10px;
+}
+/*#todo-list{*/
+  /*list-style: none;*/
+/*}*/
+/*#newTodo {*/
+  /*margin: 0;*/
+  /*padding: 16px;*/
+  /*width: 100%;*/
+  /*max-width: none;*/
+  /*border-bottom: 1px solid #ccc;*/
+/*}*/
+/*paper-fab {*/
+  /*position: absolute;*/
+  /*background: #00BCD4;*/
+  /*bottom: 2vh;*/
+  /*right: 2vw;*/
+/*}*/
+/*paper-input {*/
+  /*margin: 0 4vw;*/
+  /*padding: 0;*/
+/*}*/
+/*paper-material {*/
+  /*background-color: #fff;*/
+  /*max-width: 640px;*/
+  /*width: 95%;*/
+  /*margin: 25px auto;*/
+  /*position: relative;*/
+/*}*/
+paper-material.new-todo {
+  @apply(--layout-horizontal);
+  @apply(--layout-center);
+  background-color: #fff;
+  padding: 1vw;
   margin: 0;
   width: 100%;
   max-width: none;
   border-bottom: 1px solid #ccc;
 }
-paper-fab {
-  position: absolute;
+.new-todo paper-input{
+  @apply(--layout-flex);
+  padding-left: 2vw;
+  padding-right: 2vw;
+}
+.new-todo paper-fab {
   background: #00BCD4;
-  bottom: 2vh;
-  right: 2vw;
-}
-paper-input {
-  margin: 0 4vw;
-  padding: 0;
-}
-paper-material {
-  background-color: #fff;
-  /*max-width: 640px;*/
-  /*width: 95%;*/
-  /*margin: 25px auto;*/
-  /*position: relative;*/
+  margin-right: 1vw;
+  /*bottom: 2vh;*/
+  /*right: 2vw;*/
 }
 #todo-list {
   overflow-y: scroll;

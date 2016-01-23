@@ -22,34 +22,36 @@
           </template>
         </paper-menu>
       </paper-header-panel>
-      <paper-header-panel id="headerPanel" main class="main">
+      <div main >
+        <paper-header-panel id="headerPanel">
 
-        <paper-toolbar> <!-- Main Area Toolbar -->
-          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-          <div>PolymerWorks</div>
-        </paper-toolbar>
-        <div class="content">
-          <!-- Main Content-->
-          <iron-pages selected="{{menuSel}}">
-            <section>
+          <paper-toolbar> <!-- Main Area Toolbar -->
+            <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+            <div>PolymerWorks</div>
+          </paper-toolbar>
+          <div class="content">
+            <!-- Main Content-->
+            <iron-pages selected="{{menuSel}}">
+              <section>
 
-            </section>
+              </section>
 
-            <section>
-              <p>Selected Menu Item {{menuSel}}</p>
+              <section>
+                <p>Selected Menu Item {{menuSel}}</p>
 
-              <paper-button raised class="fancy"
-                            on-tap="handleClick" id="button">Click!
-              </paper-button>
+                <paper-button raised class="fancy"
+                              on-tap="handleClick" id="button">Click!
+                </paper-button>
 
-              <paper-badge for="button" label="{{clicksCount}}"></paper-badge>
-            </section>
+                <paper-badge for="button" label="{{clicksCount}}"></paper-badge>
+              </section>
 
-            <x-todo></x-todo>
+              <x-todo></x-todo>
 
-          </iron-pages>
-        </div>
-      </paper-header-panel>
+            </iron-pages>
+          </div>
+        </paper-header-panel>
+      </div>
     </paper-drawer-panel>
   </template>
 

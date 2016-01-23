@@ -6,7 +6,35 @@
 <dom-module id="todo-item">
   <link rel="import" type="css" href="todo-item.css">
   <template>
-    <paper-material>
+    <paper-card on-mouseenter="_mouseEnter" on-mouseleave="_mouseLeave">
+      <div class="header">
+        <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
+                        on-change="updateFinished" class="prefix"></paper-checkbox>
+        <div class="title-text"
+             on-dblclick="_editAction">
+          <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
+          <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="enter"
+                          on-keys-pressed="_commitAction"></iron-a11y-keys>
+          <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="esc"
+                          on-keys-pressed="_cancelAction"></iron-a11y-keys>
+          <paper-input id="todoTitle" label="Todo Title"
+                       hidden$="{{!inEditMode}}" focused="{{focused}}"
+                       value="{{_editingValue::input}}" no-label-float></paper-input>
+        </div>
+        <paper-icon-button icon="delete" on-tap="_destroyAction" class="suffix"></paper-icon-button>
+      </div>
+      <div class="card-content">
+        <!--<paper-icon-button icon="event">dd</paper-icon-button>-->
+        category: xxx
+      </div>
+      <div id="actions" class="card-actions hidden" >
+        <paper-icon-button icon="favorite" title="favorite"></paper-icon-button>
+        <paper-icon-button icon="event" title="event"></paper-icon-button>
+        <paper-icon-button icon="flag" title="flag"></paper-icon-button>
+        <paper-icon-button icon="more-vert" on-tap="_editTodo" style="float:right;"></paper-icon-button>
+      </div>
+    </paper-card>
+    <!--<paper-material>
       <paper-icon-item on-dblclick="_editAction">
         <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
                         on-change="updateFinished" item-icon></paper-checkbox>
@@ -20,9 +48,9 @@
             <paper-input id="todoTitle" label="Todo Title"
                          hidden$="{{!inEditMode}}" focused="{{focused}}"
                          value="{{_editingValue::input}}" no-label-float>
-              <!--<paper-icon-button suffix on-tap="_clearInput"-->
-              <!--icon="clear" alt="clear" title="clear">-->
-              <!--</paper-icon-button>-->
+              <paper-icon-button suffix on-tap="_clearInput"
+              icon="clear" alt="clear" title="clear">
+              </paper-icon-button>
             </paper-input>
           </div>
           <div secondary>
@@ -32,7 +60,7 @@
         <paper-icon-button icon="delete" on-tap="_destroyAction"></paper-icon-button>
         <paper-icon-button icon="more-vert" on-tap="_editTodo"></paper-icon-button>
       </paper-icon-item>
-    </paper-material>
+    </paper-material>-->
   </template>
   <script>
     Polymer({
@@ -115,6 +143,12 @@
       _focusChanged: function (focused) {
         if (this.inEditMode && !focused)
           this._onBlur();
+      },
+      _mouseEnter: function () {
+        this.$.actions.classList.remove('hidden');
+      },
+      _mouseLeave: function () {
+        this.$.actions.classList.add('hidden');
       },
       observers: [
         '_todoCheckChanged(localItem.finished)',

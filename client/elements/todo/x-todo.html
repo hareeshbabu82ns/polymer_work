@@ -7,16 +7,16 @@
   <link rel="import" type="css" href="x-todo.css">
   <template>
     <parse-element id="todos" class_name="Todos" items="{{todos}}"></parse-element>
-    <paper-material id="newTodo" elevation="2" class="row">
+    <paper-material id="newTodo" elevation="2" class="new-todo">
       <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
-                      on-keys-pressed="_addTodo"></iron-a11y-keys>
-      <paper-input id="todoTitle" label="Todo Title" class="col-sm-10 col-sm-offset-1"
+                      on-keys-pressed="_addTodo" hidden></iron-a11y-keys>
+      <paper-input id="todoTitle" label="Todo Title"
                    value="{{todo.title::input}}" required></paper-input>
-      <paper-fab icon="icons:add" on-tap="_addTodo" mini class="col-sm-1"></paper-fab>
+      <paper-fab icon="icons:add" on-tap="_addTodo" mini></paper-fab>
     </paper-material>
-    <div class="row">
+    <div class="cards">
       <template is="dom-repeat" items="{{todos}}">
-        <todo-item item="{{item}}" class="col-sm-4"
+        <todo-item item="{{item}}"
                    on-todo-destroy-item="_destroyTodo"
                    on-todo-update-item="_updateTodo"></todo-item>
       </template>
