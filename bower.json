@@ -27,7 +27,8 @@
     "paper-elements": "PolymerElements/paper-elements#^1.0.1",
     "platinum-elements": "PolymerElements/platinum-elements#^1.1.0",
     "flatiron-director": "PolymerLabs/flatiron-director#~1.0.0",
-    "pubnub-element": "~4.0.1"
+    "pubnub-element": "~4.0.1",
+    "async": "~1.5.2"
   },
   "resolutions": {
     "polymer": "~1.2.1",

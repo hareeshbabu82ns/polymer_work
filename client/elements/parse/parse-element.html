@@ -24,13 +24,42 @@
           },
           notify: true
         },
+        relations: {
+          type: Array,
+          value: function () {
+            //related objects to be loaded
+            //ex: [{fieldName:"field",className:"class",preFetch:true},...]
+            return [];
+          }
+        },
         filter: {
           type: String
         }
       },
       ready: function () {
+        var me = this;
         this.ParseObject = Parse.Object.extend(this.class_name);
-        this.fetchAll();
+        async.each(this.relations, function (item, callback) {//for each relation
+          item.ParseObject = Parse.Object.extend(item.className);
+          item.objects = [];
+          if (item.preFetch) {
+            var query = new Parse.Query(item.ParseObject);
+            query.find({
+              success: function (results) {
+                console.log("pre-fetched " + results.length + " relation :" + item.columnName + " items");
+                item.objects = results;
+                callback();
+              },
+              error: function (err) {
+                callback(err);
+              }
+            });
+          } else {
+            callback();
+          }
+        }, function (err) {//finished loading relations
+          me.fetchAll(); //finally fetch Root Objects
+        });
       },
       newObject: function () {
         return new this.ParseObject();
@@ -41,9 +70,9 @@
         query.find({
           success: function (results) {
             console.log("Successfully retrieved " + results.length + " " + me.class_name + ".");
-            // Do something with the returned Parse.Object values
             for (var i = 0; i < results.length; i++) {
               var object = results[i];
+              me._fillRelations(object);
               me.push('items', object);
             }
           },
@@ -51,6 +80,10 @@
             console.log("Error: " + error.code + " " + error.message);
           }
         });
+      },
+      getObjectLocal: function (id) { //pulls an object by ID from local store
+        var idx = _.findIndex(this.items, {id: item.id});
+        return this.items[idx];
       },
       addObject: function (item, options) { //item should be plain JSON
         var me = this;
@@ -71,6 +104,7 @@
       },
       updateObject: function (item, options) { //item should be ParseObject
         var me = this;
+        me._unFillRelations(item);
         return item.save(null, {
           success: function (obj) {
             console.log("updated");
@@ -106,7 +140,23 @@
         if (idx >= 0)
           this.splice('items', idx, 1);
       },
-
+      _unFillRelations: function (object) { //replaces Relation Object with IDs to update
+        _.each(this.relations, function (relation, index, list) {
+          if (relation.preFetch && relation.objects.length > 0) {
+            object.set(relation.fieldName, object.get(relation.fieldName).id);
+          }
+        });
+      },
+      _fillRelations: function (object) { //replaces Relation IDs with Objects after fetch
+        _.each(this.relations, function (relation, index, list) {
+          if (relation.preFetch && relation.objects.length > 0) {
+            object.set(relation.fieldName,
+                _.find(relation.objects, function (obj) {
+                  return object.get(relation.fieldName) === obj.id;
+                }));
+          }
+        });
+      },
       getCompletedCount: function () {
         return this.items ? this.items.filter(this.filters.finished).length : 0;
       },

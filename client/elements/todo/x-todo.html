@@ -6,7 +6,9 @@
 <dom-module id="x-todo">
   <link rel="import" type="css" href="x-todo.css">
   <template>
-    <parse-element id="todos" class_name="Todos" items="{{todos}}"></parse-element>
+    <parse-element id="todos" class_name="Todos" items="{{todos}}"
+                   relations='[{"fieldName": "flag", "className": "flags", "preFetch": true}]'></parse-element>
+    <!--<parse-element id="flags" class_name="flags" items="{{flags}}"></parse-element>-->
     <paper-material id="newTodo" elevation="2" class="new-todo">
       <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
                       on-keys-pressed="_addTodo" hidden></iron-a11y-keys>
@@ -44,6 +46,9 @@
             return this.$.todoTitle;
           }
         }
+      },
+      created: function () { //before localDOM initiates
+//        this.todo_relations = [{fieldName: "flag", className: "flags", preFetch: true}];
       },
       _addTodo: function () {
         if (this.todo.title.trim().length == 0) {
