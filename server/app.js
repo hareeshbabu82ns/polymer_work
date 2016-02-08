@@ -2,7 +2,10 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
-var app = express(); //Create the Express app
+var app = module.exports.app = exports.app = express(); //Create the Express app
+
+//you won't need 'connect-livereload' if you have livereload plugin for your browser
+app.use(require('connect-livereload')());
 
 //configure body-parser
 app.use(bodyParser.json());

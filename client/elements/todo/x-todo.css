@@ -8,33 +8,6 @@
 
   margin-right: -10px;
 }
-/*#todo-list{*/
-  /*list-style: none;*/
-/*}*/
-/*#newTodo {*/
-  /*margin: 0;*/
-  /*padding: 16px;*/
-  /*width: 100%;*/
-  /*max-width: none;*/
-  /*border-bottom: 1px solid #ccc;*/
-/*}*/
-/*paper-fab {*/
-  /*position: absolute;*/
-  /*background: #00BCD4;*/
-  /*bottom: 2vh;*/
-  /*right: 2vw;*/
-/*}*/
-/*paper-input {*/
-  /*margin: 0 4vw;*/
-  /*padding: 0;*/
-/*}*/
-/*paper-material {*/
-  /*background-color: #fff;*/
-  /*max-width: 640px;*/
-  /*width: 95%;*/
-  /*margin: 25px auto;*/
-  /*position: relative;*/
-/*}*/
 paper-material.new-todo {
   @apply(--layout-horizontal);
   @apply(--layout-center);
@@ -55,12 +28,4 @@ paper-material.new-todo {
   margin-right: 1vw;
   /*bottom: 2vh;*/
   /*right: 2vw;*/
-}
-#todo-list {
-  overflow-y: scroll;
-  height: 80vh;
-}
-
-#todos-list {
-  overflow-y: scroll;
 }

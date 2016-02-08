@@ -18,7 +18,7 @@
     </paper-material>
     <div class="cards">
       <template is="dom-repeat" items="{{todos}}">
-        <todo-item item="{{item}}"
+        <todo-item item="{{item}}" parse-element-id="todos"
                    on-todo-destroy-item="_destroyTodo"
                    on-todo-update-item="_updateTodo"></todo-item>
       </template>

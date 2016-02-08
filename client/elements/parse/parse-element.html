@@ -38,7 +38,19 @@
       },
       ready: function () {
         var me = this;
-        this.ParseObject = Parse.Object.extend(this.class_name);
+        this.ParseObject = Parse.Object.extend(this.class_name, {
+          //Instance Methods
+
+          initialize: function (attrs, options) {
+//            console.log("initialize parse object :", JSON.stringify(this.toJSON()));
+          }
+        }, { //Class Methods (static methods)
+
+          //get Polymer Parse Element that initiated this ParseObject
+          getParseElement: function () {
+            return me;
+          }
+        });
         async.each(this.relations, function (item, callback) {//for each relation
           item.ParseObject = Parse.Object.extend(item.className);
           item.objects = [];
@@ -46,7 +58,7 @@
             var query = new Parse.Query(item.ParseObject);
             query.find({
               success: function (results) {
-                console.log("pre-fetched " + results.length + " relation :" + item.columnName + " items");
+                console.log("pre-fetched ", results.length, " relation :", item.columnName, " items");
                 item.objects = results;
                 callback();
               },
@@ -77,7 +89,7 @@
             }
           },
           error: function (error) {
-            console.log("Error: " + error.code + " " + error.message);
+            console.log("Error: ", error.code, " ", error.message);
           }
         });
       },
@@ -90,6 +102,8 @@
         var obj = new this.ParseObject();
         return obj.save(item, {
           success: function (obj) {
+            console.log("created: ", obj.id);
+            me._fillRelations(obj);
             me.push('items', obj);
             console.log(obj);
             if (_.isObject(options) && _.isFunction(options.success))
@@ -107,8 +121,7 @@
         me._unFillRelations(item);
         return item.save(null, {
           success: function (obj) {
-            console.log("updated");
-            console.log(obj.toJSON());
+            console.log("updated: ", obj.id);
             if (_.isObject(options) && _.isFunction(options.success))
               options.success.call(me, obj);
           },
@@ -124,7 +137,7 @@
         return item.destroy({
           success: function (obj) {
             me.deleteObjectLocal(obj);
-            console.log("deleted");
+            console.log("deleted: ", obj.id);
             if (_.isObject(options) && _.isFunction(options.success))
               options.success.call(me, obj);
           },
@@ -143,7 +156,11 @@
       _unFillRelations: function (object) { //replaces Relation Object with IDs to update
         _.each(this.relations, function (relation, index, list) {
           if (relation.preFetch && relation.objects.length > 0) {
-            object.set(relation.fieldName, object.get(relation.fieldName).id);
+            var relObj = object.get(relation.fieldName);
+            if (_.isUndefined(relObj))
+              object.unset(relation.fieldName);
+            else
+              object.set(relation.fieldName, relObj.id);
           }
         });
       },
@@ -151,11 +168,17 @@
         _.each(this.relations, function (relation, index, list) {
           if (relation.preFetch && relation.objects.length > 0) {
             object.set(relation.fieldName,
-                _.find(relation.objects, function (obj) {
-                  return object.get(relation.fieldName) === obj.id;
-                }));
+                _.findWhere(relation.objects, {"id": object.get(relation.fieldName)})
+//                _.find(relation.objects, function (obj) {
+//                  return object.get(relation.fieldName) === obj.id;
+//                })
+            );
           }
         });
+      },
+      getRelationList: function (fieldName) {
+        var relation = _.findWhere(this.relations, {"fieldName": fieldName});
+        return (relation) ? relation.objects : [];
       },
       getCompletedCount: function () {
         return this.items ? this.items.filter(this.filters.finished).length : 0;

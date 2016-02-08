@@ -2,17 +2,18 @@
       href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="todo-input.html"/>
+<link rel="import" href="../utils/select-dropdown.html"/>
 
 <dom-module id="todo-item">
   <link rel="import" type="css" href="todo-item.css">
   <template>
-    <paper-card on-mouseenter="_mouseEnter" on-mouseleave="_mouseLeave">
+    <!--<paper-card on-mouseenter="_mouseEnter" on-mouseleave="_mouseLeave">-->
+    <paper-card>
       <div class="header">
         <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
                         on-change="updateFinished" class="prefix"></paper-checkbox>
-        <div class="title-text"
-             on-dblclick="_editAction">
-          <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
+        <div class="title-text" on-dblclick="_editAction">
+          <div id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</div>
           <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="enter"
                           on-keys-pressed="_commitAction"></iron-a11y-keys>
           <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="esc"
@@ -21,46 +22,36 @@
                        hidden$="{{!inEditMode}}" focused="{{focused}}"
                        value="{{_editingValue::input}}" no-label-float></paper-input>
         </div>
-        <paper-icon-button icon="delete" on-tap="_destroyAction" class="suffix"></paper-icon-button>
+        <paper-icon-button icon="delete" on-tap="_destroyAction" class="suffix" id="del_but"></paper-icon-button>
       </div>
       <div class="card-content">
         <!--<paper-icon-button icon="event">dd</paper-icon-button>-->
         category: xxx
       </div>
-      <div id="actions" class="card-actions hidden">
+      <!--<div id="actions" class="card-actions hidden">-->
+      <div id="actions" class="card-actions">
         <paper-icon-button icon="favorite" title="favorite"></paper-icon-button>
         <paper-icon-button icon="event" title="event"></paper-icon-button>
-        <paper-icon-button icon="flag" title="flag"></paper-icon-button>
+        <select-dropdown>
+          <paper-icon-button icon="flag" title="flag" id="flag"
+                             style$="color:{{localItem.flag.color}};"
+                             class="dropdown-trigger"></paper-icon-button>
+          <div class="dropdown-content">
+            <paper-card elevation="4">
+              <paper-menu selected="{{flagSelected}}">
+                <template is="dom-repeat" items="{{flags}}">
+                  <paper-icon-item>
+                    <iron-icon icon="flag" item-icon></iron-icon>
+                    {{item.localItem.title}}
+                  </paper-icon-item>
+                </template>
+              </paper-menu>
+            </paper-card>
+          </div>
+        </select-dropdown>
         <paper-icon-button icon="more-vert" on-tap="_editTodo" style="float:right;"></paper-icon-button>
       </div>
     </paper-card>
-    <!--<paper-material>
-      <paper-icon-item on-dblclick="_editAction">
-        <paper-checkbox id="tdCheck" checked$="{{localItem.finished}}"
-                        on-change="updateFinished" item-icon></paper-checkbox>
-        <paper-item-body two-line>
-          <div>
-            <span id="todo_title" hidden$="{{inEditMode}}">{{localItem.title}}</span>
-            <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="enter"
-                            on-keys-pressed="_commitAction"></iron-a11y-keys>
-            <iron-a11y-keys id="a11y" target="[[tdTitleInputTarget]]" keys="esc"
-                            on-keys-pressed="_cancelAction"></iron-a11y-keys>
-            <paper-input id="todoTitle" label="Todo Title"
-                         hidden$="{{!inEditMode}}" focused="{{focused}}"
-                         value="{{_editingValue::input}}" no-label-float>
-              <paper-icon-button suffix on-tap="_clearInput"
-              icon="clear" alt="clear" title="clear">
-              </paper-icon-button>
-            </paper-input>
-          </div>
-          <div secondary>
-            Due by: Tomorrow
-          </div>
-        </paper-item-body>
-        <paper-icon-button icon="delete" on-tap="_destroyAction"></paper-icon-button>
-        <paper-icon-button icon="more-vert" on-tap="_editTodo"></paper-icon-button>
-      </paper-icon-item>
-    </paper-material>-->
   </template>
   <script>
     Polymer({
@@ -80,12 +71,20 @@
           value: function () {
             return this.$.todoTitle;
           }
-        }
+        },
+        parseElementId: ""
       },
       ready: function () {
         this.inEditMode = false;
         this.focused = false;
-//        this.flagsModel =
+        this.flagSelected = 3;
+        if (!_.isUndefined(this.parseElementId)) {
+          this.parseElement = document.getElementById(this.parseElementId);
+          this.flags = this.parseElement.getRelationList('flag');
+          _.forEach(this.flags, function (flag) {
+            flag.localItem = flag.toJSON();
+          });
+        }
       },
       updateFinished: function () { //when Checkbox Clicked
         this.set('localItem.finished', this.$.tdCheck.checked);
@@ -99,6 +98,7 @@
         this.localItem = obj.toJSON();
         if (_.isObject(this.localItem.flag))
           this.localItem.flag = this.item.get('flag').toJSON();
+
         this._computeCheckMarkStyle(this.localItem);
       },
       _todoCheckChanged: function (checked) { //when todo-finished attribute changed
@@ -152,9 +152,11 @@
         if (this.localItem.flag) {
           this.customStyle['--paper-checkbox-checked-color'] = this.localItem.flag.color;
           this.customStyle['--paper-checkbox-unchecked-color'] = this.localItem.flag.color;
+          this.$.flag.customStyle['--iron-icon-fill-color'] = this.localItem.flag.color;
         } else {
 
         }
+        this.$.del_but.updateStyles();
         this.updateStyles();
         console.log("update styles");
       },
