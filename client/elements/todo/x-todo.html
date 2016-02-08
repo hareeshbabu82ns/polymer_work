@@ -6,8 +6,13 @@
 <dom-module id="x-todo">
   <link rel="import" type="css" href="x-todo.css">
   <template>
-    <parse-element id="todos" class_name="Todos" items="{{todos}}"
-                   relations='[{"fieldName": "flag", "className": "flags", "preFetch": true}]'></parse-element>
+    <firebase-collection
+        order-by-child="title"
+        limit-to-first="3"
+        location="https://htasks.firebaseio.com/todos"
+        data="{{todos}}" id="todos"></firebase-collection>
+    <!--<parse-element id="todos" class_name="Todos" items="{{todos}}"-->
+    <!--relations='[{"fieldName": "flag", "className": "flags", "preFetch": true}]'></parse-element>-->
     <!--<parse-element id="flags" class_name="flags" items="{{flags}}"></parse-element>-->
     <paper-material id="newTodo" elevation="2" class="new-todo">
       <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
@@ -57,23 +62,15 @@
         }
         var ltodo = _.clone(this.todo);
         this.set('todo.title', '')
-        this.$.todos.addObject(ltodo, {
-          success: function (obj) {
-            openToast('Task Added');
-          }
-        });
+        this.$.todos.add(ltodo);
       },
       _updateTodo: function (event) {
         console.log(event.detail);
-        this.$.todos.updateObject(event.detail, {
-          success: function () {
-            openToast('Task Updated');
-          }
-        });
+        openToast('Task Updated');
       },
       _destroyTodo: function (event) {
         openToast('Task Deleted');
-        this.$.todos.deleteObject(event.detail);
+        this.$.todos.remove(event.detail);
       }
     })
     ;
