@@ -1,0 +1,74 @@
+<link href="/bower_components/polymer/polymer.html" rel="import">
+<link href="/bower_components/paper-dialog/paper-dialog.html" rel="import">
+
+<dom-module id="todo-flag-select" attributes="opened flags-modal-id">
+  <template>
+    <paper-dialog opened="{{opened}}" with-backdrop
+                  on-iron-select="_flagSelected" id="dlgFlags">
+      <h2>Select Priority</h2>
+      <paper-dialog-scrollable>
+        <paper-menu selected="{{flagSelected}}">
+          <template is="dom-repeat" items="{{data}}">
+            <paper-icon-item>
+              <iron-icon icon="flag" item-icon style$="color:{{item.color}};"></iron-icon>
+              {{item.title}}
+            </paper-icon-item>
+          </template>
+        </paper-menu>
+      </paper-dialog-scrollable>
+      <!--      <div class="buttons">
+              <paper-button dialog-dismiss>Cancel</paper-button>
+            </div>-->
+    </paper-dialog>
+  </template>
+  <script>
+    Polymer({
+      is: "todo-flag-select",
+      properties: {
+        data: {
+          type: Array,
+          value: []
+        },
+        todo: {
+          type: Object,
+          value: null
+        },
+        opened: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true,
+          notify: true
+        },
+        flagSelected: Number
+      },
+      ready: function () {
+
+      },
+      observers: [
+        '_updateMenuList(todo,opened)'
+      ],
+      _updateMenuList: function (todo, opened) {
+        if (!todo)
+          return;
+        if (opened) { //on opening
+          if (!_.isUndefined(todo.flag)) {
+            this.flagSelected = _.findIndex(this.data,
+                {"__firebaseKey__": todo.flag});
+          } else {
+            this.flagSelected = 0;
+          }
+        } else { //on close
+
+        }
+      },
+      _flagSelected: function (selection) {
+        if(_.isUndefined(selection))
+          return;
+        this.set('todo.flag',this.data[this.flagSelected].__firebaseKey__);
+//        this.set('opened',false);
+        this.$.dlgFlags.close();
+//        this.opened = false;
+      }
+    });
+  </script>
+</dom-module>

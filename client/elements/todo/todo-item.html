@@ -32,23 +32,9 @@
       <div id="actions" class="card-actions">
         <paper-icon-button icon="favorite" title="favorite"></paper-icon-button>
         <paper-icon-button icon="event" title="event"></paper-icon-button>
-        <select-dropdown>
-          <paper-icon-button icon="flag" title="flag" id="flag"
-                             style$="color:{{item.flag.color}};"
-                             class="dropdown-trigger"></paper-icon-button>
-          <div class="dropdown-content">
-            <paper-card elevation="4">
-              <paper-menu selected="{{flagSelected}}">
-                <template is="dom-repeat" items="{{flags}}">
-                  <paper-icon-item>
-                    <iron-icon icon="flag" item-icon></iron-icon>
-                    {{item.item.title}}
-                  </paper-icon-item>
-                </template>
-              </paper-menu>
-            </paper-card>
-          </div>
-        </select-dropdown>
+        <paper-icon-button icon="flag" title="flag" id="flag"
+                           style$="color:{{item.flag.color}};"
+                           on-tap="selectFlag"></paper-icon-button>
         <paper-icon-button icon="more-vert" on-tap="_editTodo" style="float:right;"></paper-icon-button>
       </div>
     </paper-card>
@@ -71,25 +57,22 @@
           value: function () {
             return this.$.todoTitle;
           }
+        },
+        flagsElementId:{
+          type: String,
+          value: null,
+          reflectToAttribute: true
         }
       },
       ready: function () {
         this.inEditMode = false;
         this.focused = false;
-        this.flagSelected = 3;
-        /* if (!_.isUndefined(this.parseElementId)) {
-         this.parseElement = document.getElementById(this.parseElementId);
-         this.flags = this.parseElement.getRelationList('flag');
-         _.forEach(this.flags, function (flag) {
-         flag.item = flag.toJSON();
-         });
-         }*/
       },
       updateFinished: function () { //when Checkbox Clicked
         this.set('item.finished', this.$.tdCheck.checked);
 //        this.item.set('finished', this.item.finished);
         Polymer.Base.toggleClass('finished-todo', this.item.finished, this.$.todo_title);
-//        this.fire('todo-update-item', this.item);
+        this.fire('todo-update-item', this.item);
         console.log("updateFinished: " + JSON.stringify(this.item));
       },
       _todoChanged: function (obj) { //when todo object changed
@@ -125,6 +108,9 @@
             this.fire('todo-update-item', this.item);
           }
         }
+      },
+      selectFlag: function () {
+        this.fire('flag-selection',this.item);
       },
       _editTodo: function () {
         //show popup to edit Task
