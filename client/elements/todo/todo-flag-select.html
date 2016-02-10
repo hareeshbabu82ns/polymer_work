@@ -4,7 +4,7 @@
 <dom-module id="todo-flag-select" attributes="opened flags-modal-id">
   <template>
     <paper-dialog opened="{{opened}}" with-backdrop
-                  on-iron-select="_flagSelected" id="dlgFlags">
+                  on-iron-select="_flagSelection" id="dlgFlags">
       <h2>Select Priority</h2>
       <paper-dialog-scrollable>
         <paper-menu selected="{{flagSelected}}">
@@ -39,7 +39,10 @@
           reflectToAttribute: true,
           notify: true
         },
-        flagSelected: Number
+        flagSelected: {
+          type: Number,
+          value: 0
+        }
       },
       ready: function () {
 
@@ -51,23 +54,27 @@
         if (!todo)
           return;
         if (opened) { //on opening
+          this.isInProcessing = true;
           if (!_.isUndefined(todo.flag)) {
             this.flagSelected = _.findIndex(this.data,
                 {"__firebaseKey__": todo.flag});
           } else {
             this.flagSelected = 0;
           }
+          this.isInProcessing = false;
         } else { //on close
 
         }
       },
-      _flagSelected: function (selection) {
-        if(_.isUndefined(selection))
+      _flagSelection: function (event) {
+        if (this.isInProcessing || !_.isObject(this.todo))
           return;
-        this.set('todo.flag',this.data[this.flagSelected].__firebaseKey__);
-//        this.set('opened',false);
-        this.$.dlgFlags.close();
-//        this.opened = false;
+        if (_.isUndefined(event.detail.item))
+          return;
+        this.set('todo.flag', this.data[this.flagSelected].__firebaseKey__);
+        this.fire('flag-selected',
+            {todo: this.todo, 'updations': ['flag']});
+        this.opened = false;
       }
     });
   </script>

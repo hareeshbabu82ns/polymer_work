@@ -8,16 +8,17 @@
   <template>
 
     <firebase-collection
-       order-by-child="priority"
-       location="https://htasks.firebaseio.com/flags"
-       data="{{flags}}" id="flags"></firebase-collection>
+        order-by-child="priority"
+        location="https://htasks.firebaseio.com/flags"
+        data="{{flags}}" id="flags"></firebase-collection>
     <firebase-collection
         order-by-child="updatedAt"
         limit-to-first="100"
         location="https://htasks.firebaseio.com/todos"
         data="{{todos}}" id="todos"></firebase-collection>
-    <todo-flag-select data="{{flags}}" opened="{{flagSelectOpened}}"
-        todo="{{flagTodo}}"></todo-flag-select>
+    <todo-flag-select data="{{flags}}" opened="{{flagSelectionDlg.opened}}"
+                      todo="{{flagSelectionDlg.todo}}" id="todoFlagSelect"
+                      on-flag-selected="_updateTodoAttribute"></todo-flag-select>
     <!--<parse-element id="todos" class_name="Todos" items="{{todos}}"-->
     <!--relations='[{"fieldName": "flag", "className": "flags", "preFetch": true}]'></parse-element>-->
     <!--<parse-element id="flags" class_name="flags" items="{{flags}}"></parse-element>-->
@@ -31,6 +32,7 @@
     <div class="cards">
       <template is="dom-repeat" items="{{todos}}">
         <todo-item item="{{item}}"
+                   flags="{{flags}}"
                    on-todo-destroy-item="_destroyTodo"
                    on-todo-update-item="_updateTodo"
                    on-flag-selection="_showFlagSelection"></todo-item>
@@ -59,9 +61,9 @@
             return this.$.todoTitle;
           }
         },
-        flagSelectOpened:{
-          type: Boolean,
-          value: false
+        flagSelectionDlg: {
+          type: Object,
+          value: {"opened": false, "todo": null}
         }
       },
       created: function () { //before localDOM initiates
@@ -84,18 +86,41 @@
       _updateTodo: function (event) {
         console.log(event.detail);
         this.$.todos.query.ref().child(event.detail.__firebaseKey__)
-            .update({'updatedAt': new Date().getTime()});
-        openToast('Task Updated');
+            .update({'updatedAt': new Date().getTime()},
+            function (err) {
+              if (!err)
+                openToast('Task Updated');
+            });
       },
       _destroyTodo: function (event) {
         openToast('Task Deleted');
         this.$.todos.remove(event.detail);
       },
-      _showFlagSelection: function(event){
-        this.flagTodo = event.detail;
-        this.flagSelectOpened = true;
+      _showFlagSelection: function (event) {
+        this.set('flagSelectionDlg.todo', event.detail);
+        this.set('flagSelectionDlg.opened', true);
+      },
+      /*
+       event.detail should be an object
+       {
+       todo: 'todo'
+       updations: [ key1, key2 ] //which attributes have been changed
+       }
+       */
+      _updateTodoAttribute: function (event) {
+        if (!_.isObject(event.detail.todo)
+            || !_.isArray(event.detail.updations))
+          return;
+        var updates = {'updatedAt': new Date().getTime()};
+        _.each(event.detail.updations, function (attr) {
+          updates[attr] = event.detail.todo[attr];
+        });
+        this.$.todos.query.ref().child(event.detail.todo.__firebaseKey__)
+            .update(updates, function (err) {
+              if (!err)
+                openToast('Task Updated');
+            });
       }
-    })
-    ;
+    });
   </script>
 </dom-module>
